@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixFit — Batch Image Resizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-wrapper">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-crop-simple"></i></span>
+                <span class="logo-text">Pix<em>Fit</em></span>
+            </div>
+            <p class="tagline">Resize once. Get every size.</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="main-card">
+
+            <!-- Step 1: Upload -->
+            <section class="panel panel-upload">
+                <div class="step-label"><span>01</span> Drop your image</div>
+
+                <label for="imageInput" id="dropZone" class="drop-zone">
+                    <input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif">
+
+                    <div class="drop-placeholder" id="uploadPlaceholder">
+                        <div class="drop-icon-ring">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <p class="drop-primary">Click or drag image here</p>
+                        <p class="drop-secondary">PNG · JPG · WEBP · GIF</p>
+                    </div>
+
+                    <img id="imagePreview" class="image-preview hidden" alt="Preview">
+
+                    <div class="change-overlay hidden" id="changeOverlay">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        <span>Replace image</span>
+                    </div>
+                </label>
+
+                <div class="image-meta hidden" id="imageMeta">
+                    <div class="meta-pill">
+                        <i class="fa-regular fa-file-image"></i>
+                        <span id="metaFileName" class="meta-name">—</span>
+                    </div>
+                    <div class="meta-pill accent">
+                        <i class="fa-solid fa-ruler-combined"></i>
+                        <span id="metaDimensions">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Divider -->
+            <div class="panel-divider">
+                <div class="divider-line"></div>
+                <div class="divider-dot"></div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Step 2: Dimensions -->
+            <section class="panel panel-dims">
+                <div class="step-label"><span>02</span> Set your sizes</div>
+
+                <!-- Input Row -->
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="inputWidth">Width</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="inputWidth" placeholder="320" min="1" max="8000">
+                            <span class="input-unit">px</span>
+                        </div>
+                    </div>
+
+                    <button id="linkBtn" class="link-btn" title="Free (click to lock square)">
+                        <i class="fa-solid fa-link-slash" id="linkIcon"></i>
+                    </button>
+                    <span class="link-mode-label" id="linkModeLabel"></span>
+
+                    <div class="input-group">
+                        <label for="inputHeight">Height</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="inputHeight" placeholder="320" min="1" max="8000">
+                            <span class="input-unit">px</span>
+                        </div>
+                    </div>
+
+                    <button id="addDimBtn" class="add-btn" title="Add dimension">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add</span>
+                    </button>
+                </div>
+
+                <!-- Quick Sizes -->
+                <div class="quick-section">
+                    <span class="quick-label">Common sizes</span>
+                    <div class="quick-chips">
+                        <button class="quick-chip" data-w="16"   data-h="16">16×16</button>
+                        <button class="quick-chip" data-w="32"   data-h="32">32×32</button>
+                        <button class="quick-chip" data-w="64"   data-h="64">64×64</button>
+                        <button class="quick-chip" data-w="128"  data-h="128">128×128</button>
+                        <button class="quick-chip" data-w="256"  data-h="256">256×256</button>
+                        <button class="quick-chip" data-w="512"  data-h="512">512×512</button>
+                        <button class="quick-chip" data-w="1024" data-h="1024">1024×1024</button>
+                        <button class="quick-chip" data-w="1920" data-h="1080">1920×1080</button>
+                    </div>
+                </div>
+
+                <!-- Dimensions List -->
+                <div class="dims-section">
+                    <div class="dims-header">
+                        <span class="dims-title">Your list</span>
+                        <span class="dims-count" id="dimsCount">0</span>
+                        <button class="clear-all-btn hidden" id="clearAllBtn" title="Clear all">
+                            <i class="fa-solid fa-trash-can"></i> Clear all
+                        </button>
+                    </div>
+
+                    <div class="dims-list-box" id="dimsBox">
+                        <div class="dims-empty" id="dimsEmpty">
+                            <i class="fa-regular fa-rectangle-list"></i>
+                            <span>Add dimensions above to get started</span>
+                        </div>
+                        <div class="dims-chips" id="dimsList"></div>
+                    </div>
+                </div>
+
+                <!-- Download Area -->
+                <div class="download-area">
+                    <button id="downloadBtn" class="download-btn" disabled>
+                        <div class="btn-inner">
+                            <i class="fa-solid fa-file-zipper"></i>
+                            <span class="btn-label">Download as ZIP</span>
+                        </div>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <p class="status-text" id="statusText"></p>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="app-footer">
+            Built with ♥ &nbsp;· &nbsp;PixFit
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast">
+        <i class="toast-icon" id="toastIcon"></i>
+        <span id="toastMsg"></span>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay hidden" id="progressOverlay">
+        <div class="progress-card">
+            <div class="progress-spinner">
+                <svg viewBox="0 0 50 50" class="spinner-svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+                </svg>
+            </div>
+            <p class="progress-title">Preparing your images…</p>
+            <p class="progress-sub" id="progressSub">0 of 0</p>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
