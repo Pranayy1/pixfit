@@ -38,7 +38,6 @@ const els = {
     addDimBtn:        $('addDimBtn'),
 
     dimsCount:        $('dimsCount'),
-    dimsBox:          $('dimsBox'),
     dimsEmpty:        $('dimsEmpty'),
     dimsList:         $('dimsList'),
     clearAllBtn:      $('clearAllBtn'),
@@ -97,6 +96,11 @@ function loadImageFile(file) {
     state.mimeType = mimeMap[state.fileExt] || 'image/png';
 
     const reader = new FileReader();
+
+    reader.onerror = () => {
+        toast('Failed to read file. It may be corrupt or inaccessible.', 'error');
+    };
+
     reader.onload = evt => {
         const img = new Image();
         img.onload = () => {
@@ -117,6 +121,11 @@ function loadImageFile(file) {
 
             refreshDownloadBtn();
             toast('Image loaded!', 'success');
+
+            // Warn about GIF animation loss
+            if (state.fileExt === 'gif') {
+                toast('GIFs are exported as static PNG frames (animation not preserved).', 'warning');
+            }
         };
         img.src = evt.target.result;
     };
@@ -359,8 +368,9 @@ async function handleDownload() {
 
         showProgress(false);
         toast(`${total} image${total > 1 ? 's' : ''} packed into ZIP! ✓`, 'success');
+        if (statusTimer) clearTimeout(statusTimer);
         els.statusText.textContent = 'ZIP downloaded ✓';
-        setTimeout(() => els.statusText.textContent = '', 4000);
+        statusTimer = setTimeout(() => els.statusText.textContent = '', 4000);
 
     } catch (err) {
         console.error('[PixFit] Download error:', err);
@@ -411,6 +421,7 @@ function updateProgress(current, total) {
 // ─── Toast ───────────────────────────────────────
 
 let toastTimer = null;
+let statusTimer = null;
 
 function toast(message, type = 'info') {
     const iconMap = {
